@@ -1,23 +1,27 @@
 package com.example.task.task3.coroutines
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.ContinuationInterceptor
 import kotlin.coroutines.CoroutineContext
 
-fun main() = runBlocking {
+fun main() {
     demoCoroutineContext()
     demoJob()
     demoCoroutineDispatchers()
+    demoCoroutineExceptionHandler()
 }
 // CoroutineContext và Elements
 fun demoCoroutineContext() = runBlocking {
-    // Elements
+    // Element
     val element1: CoroutineContext = Dispatchers.IO
     val element2: CoroutineContext = CoroutineName("MyCoroutine")
     // CoroutineContext là tập hợp các Elements
@@ -108,25 +112,37 @@ fun demoJob() = runBlocking {
 
 // Coroutine Dispatchers
 fun demoCoroutineDispatchers() = runBlocking {
-    // Dispatchers.Default: Sử dụng cho các tác vụ CPU như tính toán nặng
-    launch(Dispatchers.Default) {
-        Log.d("Dispatchers", "Running on Default Dispatcher")
-    }.join()
+    //demo ở MainActivity
+}
 
-    // Dispatchers.IO: Sử dụng cho các tác vụ I/O như đọc/ghi file, mạng
-    launch(Dispatchers.IO) {
-        Log.d("Dispatchers", "Running on IO Dispatcher")
-    }.join()
+// CoroutineExceptionHandler
+fun demoCoroutineExceptionHandler() = runBlocking {
+    val handler = CoroutineExceptionHandler { _, exception ->
+        Log.d("ExceptionHandler", "Caught exception: ${exception.message}")
+    }
 
-    // Dispatchers.Main: Sử dụng cho các tác vụ liên quan đến UI (chỉ có trên Android)
-    launch(Dispatchers.Main) {
-        Log.d("Dispatchers", "Running on Main Dispatcher")
-    }.join()
+    // Coroutine với ExceptionHandler chỉ hiệu lực cho root coroutine hoặc gắn supervisorScope, parent coroutine
+    supervisorScope {
+        launch(handler) {
+            launch {
+                Log.d("ExceptionHandler","Job with handler - 1")
+                throw Exception("Exception in 1")
+            }
+            launch {
+                delay(500)
+                Log.d("ExceptionHandler","Job with handler - 2")
+            }
+        }
+    }
 
-    // Dispatchers.Unconfined: Bắt đầu trong luồng gọi, sau đó chuyển sang luồng khác khi gặp điểm dừng
-    launch(Dispatchers.Unconfined) {
-        Log.d("Dispatchers", "Running on Unconfined Dispatcher - Thread name: ${Thread.currentThread().name}")
-        delay(1000)
-        Log.d("Dispatchers", "Running on Unconfined Dispatcher - Thread name after delay: ${Thread.currentThread().name}")
-    }.join()
+    // Coroutine không có ExceptionHandler
+    val jobWithoutHandler = launch {
+        Log.d("ExceptionHandler", "Job without handler")
+        throw Exception("Exception in job without handler")
+    }
+    try {
+        jobWithoutHandler.join()
+    } catch (e: Exception) {
+        Log.d("ExceptionHandler", "Caught exception from job without handler: ${e.message}")
+    }
 }

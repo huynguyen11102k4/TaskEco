@@ -48,5 +48,9 @@ dependencies {
 
     implementation(libs.coroutines)
 
+    implementation(libs.serialization)
+
+    implementation(kotlin("reflect"))
+
 
 }
