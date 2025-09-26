@@ -103,20 +103,6 @@ fun topLevelFunction(a: Int, b: Int): Int {
     return a + b
 }
 
-// Tham chiếu hàm thành viên
-class Multiplier {
-    fun multi(a: Int, b: Int): Int {
-        return a * b
-    }
-}
-
-// Class Implement Function Type
-class Adder: (Int, Int) -> Int {
-    override fun invoke(p1: Int, p2: Int): Int {
-        return p1 + p2
-    }
-}
-
 // Inline Function
 inline fun subtract(a: Int, b: Int): Int {
     return a - b

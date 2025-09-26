@@ -11,6 +11,10 @@ fun main() {
     val findList: ListCovariant<Int> = ListCovariant(listOf(1, 2, 3, 4, 5))
     val index = findList.findIndex(3)
     println("Index of 3 is $index")
+
+    val listNum = listOf(1, 2, 3, 4, 5)
+    val mappedList = listNum.customMap { it.toString() }
+    println("Mapped List: $mappedList")
 }
 
 fun <T> MutableListInvariant<T>.swap(index1: Int, index2: Int) {
@@ -34,6 +38,14 @@ fun <T : Comparable<T>> ListCovariant<T>.findIndex(value: T): Int {
         }
     }
     return -1
+}
+
+fun <T, R> List<T>.customMap(t: (T) -> R): List<R> {
+    val result = mutableListOf<R>()
+    for (item in this) {
+        result.add(t(item))
+    }
+    return result
 }
 
 //Star projection (đại diện sao) - khi không biết kiểu cụ thể, sử dụng * để đại diện cho bất kỳ kiểu nào
