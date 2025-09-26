@@ -4,12 +4,12 @@ import android.util.Log
 
 
 fun main() {
-    val list = listOf(
-        Outcome.Success("Thành công"),
-        Outcome.Failure("Thất bại"),
-        Outcome.Unknown
-    )
-    for (outcome in list) {
+    val names = mutableListOf("Huy", "Anh", "Dat")
+    names.find { it == "Huy" }?.let {
+        val outcome = Outcome.Success(it)
+        outcome.print()
+    } ?: run {
+        val outcome = Outcome.Failure("Không tìm thấy tên")
         outcome.print()
     }
 }
